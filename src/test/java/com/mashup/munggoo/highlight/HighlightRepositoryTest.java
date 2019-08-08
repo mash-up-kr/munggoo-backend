@@ -46,4 +46,22 @@ public class HighlightRepositoryTest {
         assertThat(savedHighlights.get(1).getType()).isEqualTo(HighlightType.SENTENCE);
         assertThat(savedHighlights.get(1).getIsImportant()).isEqualTo(Boolean.FALSE);
     }
+
+    @Test
+    public void deleteAllByFileId() {
+        reqHighlightDtos = new ArrayList<>();
+        reqHighlightDtos.add(new ReqHighlightDto(10L, 20L, "안녕", 1));
+        reqHighlightDtos.add(new ReqHighlightDto(30L, 40L, "안녕하세요 반갑습니다.", 0));
+        highlights = reqHighlightDtos.stream().map(reqHighlightDto -> Highlight.from(fileId, reqHighlightDto)).collect(Collectors.toList());
+        reqHighlightDtos = new ArrayList<>();
+        reqHighlightDtos.add(new ReqHighlightDto(10L, 20L, "안녕", 1));
+        reqHighlightDtos.add(new ReqHighlightDto(30L, 40L, "안녕하세요 반갑습니다.", 0));
+        highlights.addAll(reqHighlightDtos.stream().map(reqHighlightDto -> Highlight.from(fileId + 1, reqHighlightDto)).collect(Collectors.toList()));
+        highlightRepository.saveAll(highlights);
+        highlightRepository.deleteAllByFileId(fileId);
+        List<Highlight> savedHighlights1 = highlightRepository.findByFileId(fileId);
+        List<Highlight> savedHighlights2 = highlightRepository.findByFileId(fileId + 1);
+        assertThat(savedHighlights1.size()).isEqualTo(0);
+        assertThat(savedHighlights2.size()).isEqualTo(2);
+    }
 }

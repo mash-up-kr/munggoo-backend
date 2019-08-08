@@ -60,8 +60,8 @@ public class HighlightControllerTest {
         highlights = reqHighlightDtos.stream().map(reqHighlightDto -> Highlight.from(fileId, reqHighlightDto)).collect(Collectors.toList());
         when(highlightService.save(any(), any())).thenReturn(highlights);
         mockMvc.perform(post("/v1/devices/{device-id}/files/{file-id}/highlights", 1L, fileId)
-                    .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
-                    .content(objectMapper.writeValueAsString(reqHighlightDtos)))
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(objectMapper.writeValueAsString(reqHighlightDtos)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(jsonPath("$.[0].id").hasJsonPath())
@@ -86,8 +86,8 @@ public class HighlightControllerTest {
         reqHighlightDtos = new ArrayList<>();
         when(highlightService.save(any(), any())).thenThrow(new BadRequestException("Request Body Is Empty."));
         mockMvc.perform(post("/v1/devices/{device-id}/files/{file-id}/highlights", 1L, fileId)
-                    .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
-                    .content(objectMapper.writeValueAsString(reqHighlightDtos)))
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(objectMapper.writeValueAsString(reqHighlightDtos)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(jsonPath("$.code").value("400"))
@@ -95,6 +95,7 @@ public class HighlightControllerTest {
                 .andExpect(jsonPath("$.timestamp").exists())
                 .andDo(print());
     }
+
 
     @Test
     public void getHighlights() throws Exception {
@@ -125,38 +126,6 @@ public class HighlightControllerTest {
     public void getEmptyHighlight() throws Exception {
         when(highlightService.getHighlights(any())).thenThrow(new NotFoundException("Highlight Does Not Exist."));
         mockMvc.perform(get("/v1/devices/{device-id}/files/{file-id}/highlights", 1L, fileId)
-                    .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(jsonPath("$.code").value("404"))
-                .andExpect(jsonPath("$.msg").value("Highlight Does Not Exist."))
-                .andExpect(jsonPath("$.timestamp").exists())
-                .andDo(print());
-    }
-
-    @Test
-    public void deleteHighlight() throws Exception {
-        ReqHighlightDto reqHighlightDto = new ReqHighlightDto(10L, 20L, "안녕", 1);
-        Highlight highlight = Highlight.from(fileId, reqHighlightDto);
-        when(highlightService.deleteHighlight(id)).thenReturn(highlight);
-        mockMvc.perform(delete("/v1/devices/{device-id}/files/{file-id}/highlights/{highlight-id}", 1L, fileId, 1L)
-                    .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(jsonPath("$.id").hasJsonPath())
-                .andExpect(jsonPath("$.fileId").value(highlight.getFileId()))
-                .andExpect(jsonPath("$.startIndex").value(highlight.getStartIndex()))
-                .andExpect(jsonPath("$.endIndex").value(highlight.getEndIndex()))
-                .andExpect(jsonPath("$.content").value(highlight.getContent()))
-                .andExpect(jsonPath("$.type").value(highlight.getType().toString()))
-                .andExpect(jsonPath("$.isImportant").value(highlight.getIsImportant()))
-                .andDo(print());
-    }
-
-    @Test
-    public void deleteEmptyHighlight() throws Exception {
-        when(highlightService.deleteHighlight(any())).thenThrow(new NotFoundException("Highlight Does Not Exist."));
-        mockMvc.perform(delete("/v1/devices/{device-id}/files/{file-id}/highlights/{highlight-id}", 1L, fileId, 1L)
                     .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
