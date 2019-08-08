@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -33,15 +32,5 @@ public class HighlightService {
             throw new NotFoundException("Highlight Does Not Exist.");
         }
         return new ResHighlightsDto(highlights.stream().map(ResHighlightDto::new).collect(Collectors.toList()));
-    }
-
-    public Highlight deleteHighlight(Long id) {
-        Optional<Highlight> highlight = highlightRepository.findById(id);
-        if (highlight.isPresent()) {
-            highlightRepository.deleteById(id);
-            return highlight.get();
-        } else {
-            throw new NotFoundException("Highlight Does Not Exist.");
-        }
     }
 }

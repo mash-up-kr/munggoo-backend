@@ -12,7 +12,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,7 +28,6 @@ public class HighlightServiceTest {
     @MockBean
     private HighlightRepository highlightRepository;
 
-    private Long id;
 
     private Long fileId;
 
@@ -39,11 +37,8 @@ public class HighlightServiceTest {
 
     private ResHighlightsDto resHighlightsDto;
 
-    private ReqHighlightDto reqHighlightDto;
-
     @Before
     public void setUp() {
-        id = 1L;
         fileId = 1L;
     }
 
@@ -103,21 +98,5 @@ public class HighlightServiceTest {
         highlights = new ArrayList<>();
         given(highlightRepository.findByFileId(any())).willReturn(highlights);
         highlightService.getHighlights(fileId);
-    }
-
-    @Test
-    public void deleteHighlight() {
-        reqHighlightDto = new ReqHighlightDto(10L, 20L, "안녕", 1);
-        given(highlightRepository.findById(any())).willReturn(Optional.of(Highlight.from(fileId, reqHighlightDto)));
-        Highlight highlight = highlightService.deleteHighlight(id);
-        assertThat(highlight.getStartIndex()).isEqualTo(reqHighlightDto.getStartIndex());
-        assertThat(highlight.getType()).isEqualTo(HighlightType.WORD);
-        assertThat(highlight.getIsImportant()).isEqualTo(Boolean.TRUE);
-    }
-
-    @Test(expected = NotFoundException.class)
-    public void deleteEmptyHighlight() {
-        given(highlightRepository.findById(any())).willReturn(Optional.empty());
-        highlightService.deleteHighlight(id);
     }
 }
