@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 @RequiredArgsConstructor
 @Service
 public class HighlightService {
@@ -17,6 +18,10 @@ public class HighlightService {
     public List<Highlight> save(Long fileId, List<ReqHighlightDto> reqHighlightDtos) {
         if (reqHighlightDtos.isEmpty()) {
             throw new BadRequestException("Request Body Is Empty.");
+        }
+        List<Highlight> highlights = highlightRepository.findByFileId(fileId);
+        if (!highlights.isEmpty()) {
+            highlightRepository.deleteAllByFileId(fileId);
         }
         return highlightRepository.saveAll(reqHighlightDtos.stream()
                 .map(reqHighlightDto -> Highlight.from(fileId, reqHighlightDto))
@@ -29,15 +34,5 @@ public class HighlightService {
             throw new NotFoundException("Highlight Does Not Exist.");
         }
         return highlights.stream().map(ResHighlightDto::new).collect(Collectors.toList());
-    }
-
-    public Highlight deleteHighlight(Long id) {
-        Optional<Highlight> highlight = highlightRepository.findById(id);
-        if (highlight.isPresent()) {
-            highlightRepository.deleteById(id);
-            return highlight.get();
-        } else {
-            throw new NotFoundException("Highlight Does Not Exist.");
-        }
     }
 }

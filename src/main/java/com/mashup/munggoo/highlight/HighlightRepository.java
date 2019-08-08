@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface HighlightRepository extends JpaRepository<Highlight, Long> {
     List<Highlight> findByFileId(Long fileId);
+    void deleteAllByFileId(Long fileId);
 }
