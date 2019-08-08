@@ -18,6 +18,10 @@ public class HighlightService {
         if (reqHighlightsDto.getHighlights().isEmpty()) {
             throw new BadRequestException("Request Body Is Empty.");
         }
+        List<Highlight> highlights = highlightRepository.findByFileId(fileId);
+        if (!highlights.isEmpty()) {
+            highlightRepository.deleteAllByFileId(fileId);
+        }
         return new HighlightsDto(highlightRepository.saveAll(reqHighlightsDto.getHighlights().stream()
                 .map(reqHighlightDto -> Highlight.from(fileId, reqHighlightDto))
                 .collect(Collectors.toList())));
